@@ -23,17 +23,9 @@ pathList = []
 
 frame_rate=50/1000
 
-root_path=(r"/Users/Mathew/Documents/Manuscripts/ScotFluor Peptides/Rebuttal/Photobleaching/BIODIPY/All/")
+root_path=(r"path_to_root")
 
-pathList.append(r"/Users/Mathew/Documents/Manuscripts/ScotFluor Peptides/Rebuttal/Photobleaching/BIODIPY/All/1/")
-pathList.append(r"/Users/Mathew/Documents/Manuscripts/ScotFluor Peptides/Rebuttal/Photobleaching/BIODIPY/All/2/")
-pathList.append(r"/Users/Mathew/Documents/Manuscripts/ScotFluor Peptides/Rebuttal/Photobleaching/BIODIPY/All/3/")
-pathList.append(r"/Users/Mathew/Documents/Manuscripts/ScotFluor Peptides/Rebuttal/Photobleaching/BIODIPY/All/4/")
-pathList.append(r"/Users/Mathew/Documents/Manuscripts/ScotFluor Peptides/Rebuttal/Photobleaching/BIODIPY/All/5/")
-pathList.append(r"/Users/Mathew/Documents/Manuscripts/ScotFluor Peptides/Rebuttal/Photobleaching/BIODIPY/All/6/")
-pathList.append(r"/Users/Mathew/Documents/Manuscripts/ScotFluor Peptides/Rebuttal/Photobleaching/BIODIPY/All/7/")
-pathList.append(r"/Users/Mathew/Documents/Manuscripts/ScotFluor Peptides/Rebuttal/Photobleaching/BIODIPY/All/8/")
-pathList.append(r"/Users/Mathew/Documents/Manuscripts/ScotFluor Peptides/Rebuttal/Photobleaching/BIODIPY/All/9/")
+pathList.append(r"path_to_file")
 
 
 
@@ -118,7 +110,6 @@ def analyse_labelled_image(labelled_image, original_image):
 
 # Curve fitting
 
-
 def lifetime(x, y0, x0, A, tau):
     return y0 + A*np.exp(-(x-x0)/tau)
 
@@ -133,23 +124,25 @@ for i in range(len(pathList)):
     imagestack = load_image(toload)
 
     zproj = np.mean(imagestack, axis=0)
-    filt=zproj
-    # filt = subtract_bg(zproj)
-    im_threshold, im_binary = threshold_image_msd(filt)
+    
+    im_threshold, im_binary = threshold_image_msd(zproj)
 
     im = Image.fromarray(im_binary)
 
+    # Segment
     im_number, im_labelled = label_image(im_binary)
-
+    
+    # Save metrics
     im_measurements = analyse_labelled_image(im_labelled, zproj)
     im_measurements.to_csv(directory + '/' + 'all_metrics.csv', sep='\t')
 
-    # Need to extract frames
+    # Need to extract frames for fit
     number_of_clusters = im_number
 
     dimension_of_image = np.shape(imagestack)
     length = dimension_of_image[0]
-
+    
+    # To save data:
     lifetimes=[]
     r_sq=[]
     
